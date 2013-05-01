@@ -66,6 +66,17 @@ if [ "${monitor_temp:-0}" -eq 1 ]; then
   dss=(${dss[@]} $(newds "temp" "$temp"))
 fi
 
+# Read temperature from DS18B20
+if [ "${monitor_temp_in:-0}" -eq 1 ]; then
+  tempi=0
+  dss=(${dss[@]} $(newds "temp_inside" "$tempi"))
+fi
+
+if [ "${monitor_temp_out:-0}" -eq 1 ]; then
+  tempo=0
+  dss=(${dss[@]} $(newds "temp_outside" "$tempo"))
+fi
+
 # Read process count (remove ps, wc and cron from the count)
 if [ "${monitor_pid_count:-0}" -eq 1 ]; then
   pid_count=$(expr $(ps -e | wc -l) - 3)
