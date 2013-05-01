@@ -16,6 +16,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+function read_w1() {
+  res=`cat "$1"` 
+  echo $res | grep -s  "YES" >/dev/null
+  if [[ $? -eq 0 ]] ; then
+    t=`echo $res| head -1 | awk 'BEGIN{FS="="} { print ($3/1000) }'`
+  else
+    t="BAD"
+  fi
+  echo $t
+}
+
+
 cd $(dirname $(realpath $0))
 . utils/utils.sh
 
@@ -41,6 +53,21 @@ fi
 # Read free and total memory
 mem_free=$(cat /proc/meminfo | grep MemFree | awk '{r=$2/1024; printf "%0.2f", r}')
 mem_total=$(cat /proc/meminfo | grep MemTotal | awk '{r=$2/1024; printf "%0.2f", r}')
+
+# Read DS18B20 sensors
+t1="/sys/bus/w1/devices/28-000003eb83e3/w1_slave"
+t2="/sys/bus/w1/devices/28-000003c1bf9e/w1_slave"
+
+while true; do
+  tempo=`read_w1 "$t1"`
+  tempi=`read_w1 "$t2"`
+  d=`date +%s`
+  if [ $tempo != "BAD" ];then
+    if [ $tempi != "BAD" ];then
+      break
+    fi
+  fi
+done
 
 if [ "${monitor_mem_free:-0}" -eq 1 ]; then
   dss=(${dss[@]} $(newds "mem_free" "$mem_free"))
@@ -68,12 +95,10 @@ fi
 
 # Read temperature from DS18B20
 if [ "${monitor_temp_in:-0}" -eq 1 ]; then
-  tempi=0
   dss=(${dss[@]} $(newds "temp_inside" "$tempi"))
 fi
 
 if [ "${monitor_temp_out:-0}" -eq 1 ]; then
-  tempo=0
   dss=(${dss[@]} $(newds "temp_outside" "$tempo"))
 fi
 
