@@ -48,6 +48,10 @@ monitor_mem_cached=1
 monitor_temp=1
 monitor_temp_f=0
 
+# Monito the DS18B20 temperatures
+monitor_temp_in=1
+monitor_temp_out=1
+
 # Monitor the number of processes
 monitor_pid_count=1
 
