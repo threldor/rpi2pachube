@@ -20,7 +20,7 @@ function read_w1() {
   res=`cat "$1"` 
   echo $res | grep -s  "YES" >/dev/null
   if [[ $? -eq 0 ]] ; then
-    t=`echo $res| head -1 | awk 'BEGIN{FS="="} { print ($3/1000) }'`
+    t=`echo $res| head -1 | awk 'BEGIN{FS="="} { sub("..$", "", $3); print ($3/10) }'`
   else
     t="BAD"
   fi
