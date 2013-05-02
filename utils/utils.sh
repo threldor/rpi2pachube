@@ -65,6 +65,17 @@ function read_s () {
   return 0
 }
 
+function read_w1() {
+  res=`cat "$1"` 
+  echo $res | grep -s  "YES" >/dev/null
+  if [[ $? -eq 0 ]] ; then
+    t=`echo $res| head -1 | awk 'BEGIN{FS="="} { sub("..$", "", $3); print ($3/10) }'`
+  else
+    t="BAD"
+  fi
+  echo $t
+}
+
 function get_interfaces() {
   echo $(ip link show | grep ^[0-9] | cut -d ' ' -f 2 | cut -d ':' -f 1 | tr "\n" ',' | sed "s/,$//")
 }
