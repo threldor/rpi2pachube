@@ -76,6 +76,10 @@ function read_w1() {
   echo $t
 }
 
+function read_w1_dev() {
+  select d in /sys/bus/w1/devices/28*; do test -n "$d" && break; echo ">>> Invalid Selection"; done
+  echo $d"/w1_slave"
+}
 function get_interfaces() {
   echo $(ip link show | grep ^[0-9] | cut -d ' ' -f 2 | cut -d ':' -f 1 | tr "\n" ',' | sed "s/,$//")
 }

@@ -45,6 +45,8 @@ Current configuration:
   -Monitor used memory: $(bool2str "$monitor_mem_used")
   -Monitor cached memory: $(bool2str "$monitor_mem_cached")
   -Monitor temperature: $(bool2str "$monitor_temp")
+  -Monitor indoor temperature: $(bool2str "$monitor_temp_in")
+  -Monitor outdoor temperature: $(bool2str "$monitor_temp_out")
   -Monitor temp. in Fahrenheit: $(bool2str "$monitor_temp_f")
   -Monitor number of processes: $(bool2str "$monitor_pid_count")
   -Monitor number of connections: $(bool2str "$monitor_connections")
@@ -96,6 +98,20 @@ monitor_users=$?
 
 read_yn "Would you like to monitor the uptime? (y/n)" "$monitor_uptime"
 monitor_uptime=$?
+
+read_yn "Would you like to monitor indoor temperature with a 1-wire sensor? (y/n)" "$monitor_temp_in"
+monitor_temp_in=$?
+if [ "${monitor_temp_in:-0}" -eq 1 ]; then
+  echo "Please select the 1-wire device:"
+  monitor_temp_in_dev=`read_w1_dev`
+fi
+
+read_yn "Would you like to monitor the outdoor temperature with a 1-wire sensor? (y/n)" "$monitor_temp_out"
+monitor_temp_out=$?
+if [ "${monitor_temp_out:-0}" -eq 1 ]; then
+  echo "Please select the 1-wire device:"
+  monitor_temp_out_dev=`read_w1_dev`
+fi
 
 # Check that ifstat command is installed
 which ifstat &>/dev/null
@@ -150,6 +166,12 @@ monitor_mem_cached=$monitor_mem_cached
 # Monitor the temperature
 monitor_temp=$monitor_temp
 monitor_temp_f=$monitor_temp_f
+
+# Monitor the 1-wire sensors
+monitor_temp_in=$monitor_temp_in
+monitor_temp_in_dev=$monitor_temp_in_dev
+monitor_temp_out=$monitor_temp_out
+monitor_temp_out_dev=$monitor_temp_out_dev
 
 # Monitor the number of processes
 monitor_pid_count=$monitor_pid_count
